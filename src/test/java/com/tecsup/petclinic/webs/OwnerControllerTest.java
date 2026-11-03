@@ -90,4 +90,16 @@ public class OwnerControllerTest {
                 .andExpect(jsonPath("$.city").value("Madison"))
                 .andExpect(jsonPath("$.telephone").value("6085550199"));
     }
+
+    @Test
+    public void testCreateOwner_BadRequest() throws Exception {
+        this.mockMvc.perform(post("/owners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"firstName":"Ana","address":"123 Main St",
+                                 "city":"Madison","telephone":"6085550199"}
+                                """))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
 }
