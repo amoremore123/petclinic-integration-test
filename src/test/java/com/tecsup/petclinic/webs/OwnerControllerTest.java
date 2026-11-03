@@ -102,4 +102,14 @@ public class OwnerControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void testFindByLastName() throws Exception {
+        this.mockMvc.perform(get("/owners").param("lastName", "Davis"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].lastName").value("Davis"))
+                .andExpect(jsonPath("$[1].lastName").value("Davis"));
+    }
 }
