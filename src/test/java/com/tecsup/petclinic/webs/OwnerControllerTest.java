@@ -7,9 +7,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -68,5 +70,24 @@ public class OwnerControllerTest {
 
         this.mockMvc.perform(get("/owners/666"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateOwner() throws Exception {
+        this.mockMvc.perform(post("/owners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"firstName":"Ana","lastName":"Torres","address":"123 Main St",
+                                 "city":"Madison","telephone":"6085550199"}
+                                """))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.firstName").value("Ana"))
+                .andExpect(jsonPath("$.lastName").value("Torres"))
+                .andExpect(jsonPath("$.address").value("123 Main St"))
+                .andExpect(jsonPath("$.city").value("Madison"))
+                .andExpect(jsonPath("$.telephone").value("6085550199"));
     }
 }
