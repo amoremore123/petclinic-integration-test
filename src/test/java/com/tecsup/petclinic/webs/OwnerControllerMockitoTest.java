@@ -75,6 +75,19 @@ public class OwnerControllerMockitoTest {
         Mockito.verifyNoMoreInteractions(ownerService);
     }
 
+    @Test
+    public void testFindOwnerKO() throws Exception {
+        final Long id = 666L;
+        Mockito.when(ownerService.findById(id))
+                .thenThrow(new OwnerNotFoundException("Record not found...!"));
+
+        mockMvc.perform(get("/owners/{id}", id))
+                .andExpect(status().isNotFound());
+
+        Mockito.verify(ownerService).findById(id);
+        Mockito.verifyNoMoreInteractions(ownerService);
+    }
+
     // Integrante C — Actualización y borrado
 
     @Test
