@@ -88,6 +88,32 @@ public class OwnerControllerMockitoTest {
         Mockito.verifyNoMoreInteractions(ownerService);
     }
 
+    // Integrante B — Creación y filtro por apellido
+
+    @Test
+    public void testCreateOwner() throws Exception {
+        final Long id = 10002L;
+        OwnerDTO newOwner = OwnerObjectCreator.getOwnerTO();
+        OwnerDTO createdOwner = OwnerObjectCreator.getOwnerTO();
+        createdOwner.setId(id);
+        Mockito.when(ownerService.create(newOwner)).thenReturn(createdOwner);
+
+        mockMvc.perform(post("/owners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(newOwner)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(id.intValue()))
+                .andExpect(jsonPath("$.firstName").value(newOwner.getFirstName()))
+                .andExpect(jsonPath("$.lastName").value(newOwner.getLastName()))
+                .andExpect(jsonPath("$.address").value(newOwner.getAddress()))
+                .andExpect(jsonPath("$.city").value(newOwner.getCity()))
+                .andExpect(jsonPath("$.telephone").value(newOwner.getTelephone()));
+
+        Mockito.verify(ownerService).create(newOwner);
+        Mockito.verifyNoMoreInteractions(ownerService);
+    }
+
     // Integrante C — Actualización y borrado
 
     @Test
