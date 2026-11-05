@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -156,5 +157,30 @@ public class OwnerControllerTest {
                 .andExpect(jsonPath("$.address").value(updatedOwner.getAddress()))
                 .andExpect(jsonPath("$.city").value(updatedOwner.getCity()))
                 .andExpect(jsonPath("$.telephone").value(updatedOwner.getTelephone()));
+    }
+
+    /**
+     * Integrante C: crea un propietario propio, lo borra y confirma su ausencia.
+     */
+    @Test
+    @Transactional
+    public void testDeleteOwner() throws Exception {
+        OwnerDTO newOwner = OwnerObjectCreator.getOwnerTO();
+
+        String response = mockMvc.perform(post("/owners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(newOwner)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andReturn().getResponse().getContentAsString();
+
+        Long id = om.readValue(response, OwnerDTO.class).getId();
+
+        mockMvc.perform(delete("/owners/{id}", id))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/owners/{id}", id))
+                .andExpect(status().isNotFound());
     }
 }
