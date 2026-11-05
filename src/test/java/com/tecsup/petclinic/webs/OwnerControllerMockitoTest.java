@@ -116,4 +116,18 @@ public class OwnerControllerMockitoTest {
         Mockito.verify(ownerService).findById(id);
         Mockito.verifyNoMoreInteractions(ownerService);
     }
+
+    @Test
+    public void testDeleteOwnerKO() throws Exception {
+        final Long id = 1000L;
+
+        Mockito.doThrow(new OwnerNotFoundException("Record not found...!"))
+                .when(ownerService).delete(id);
+
+        mockMvc.perform(delete("/owners/{id}", id))
+                .andExpect(status().isNotFound());
+
+        Mockito.verify(ownerService).delete(id);
+        Mockito.verifyNoMoreInteractions(ownerService);
+    }
 }

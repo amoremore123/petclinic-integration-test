@@ -183,4 +183,13 @@ public class OwnerControllerTest {
         mockMvc.perform(get("/owners/{id}", id))
                 .andExpect(status().isNotFound());
     }
+
+    /**
+     * Integrante C: DELETE de un propietario inexistente devuelve 404.
+     */
+    @Test
+    public void testDeleteOwnerKO() throws Exception {
+        mockMvc.perform(delete("/owners/{id}", 1000L))
+                .andExpect(status().isNotFound());
+    }
 }
