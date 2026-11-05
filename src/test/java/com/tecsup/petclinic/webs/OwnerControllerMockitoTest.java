@@ -1,6 +1,7 @@
 package com.tecsup.petclinic.webs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tecsup.petclinic.dtos.OwnerDTO;
 import com.tecsup.petclinic.exceptions.OwnerNotFoundException;
 import com.tecsup.petclinic.services.OwnerService;
@@ -112,6 +113,19 @@ public class OwnerControllerMockitoTest {
 
         Mockito.verify(ownerService).create(newOwner);
         Mockito.verifyNoMoreInteractions(ownerService);
+    }
+
+    @Test
+    public void testCreateOwner_BadRequest() throws Exception {
+        ObjectNode body = om.valueToTree(OwnerObjectCreator.getOwnerTO());
+        body.remove("lastName");
+
+        mockMvc.perform(post("/owners")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(body)))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verifyNoInteractions(ownerService);
     }
 
     // Integrante C — Actualización y borrado
