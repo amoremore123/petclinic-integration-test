@@ -128,6 +128,23 @@ public class OwnerControllerMockitoTest {
         Mockito.verifyNoInteractions(ownerService);
     }
 
+    @Test
+    public void testFindByLastName() throws Exception {
+        List<OwnerDTO> owners = OwnerObjectCreator.getDavisOwnersTO();
+        Mockito.when(ownerService.findByLastName("Davis")).thenReturn(owners);
+
+        mockMvc.perform(get("/owners").param("lastName", "Davis"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].lastName").value("Davis"))
+                .andExpect(jsonPath("$[1].lastName").value("Davis"))
+                .andExpect(content().json(om.writeValueAsString(owners)));
+
+        Mockito.verify(ownerService).findByLastName("Davis");
+        Mockito.verifyNoMoreInteractions(ownerService);
+    }
+
     // Integrante C — Actualización y borrado
 
     @Test
