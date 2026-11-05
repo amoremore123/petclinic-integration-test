@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integrante C — Actualización y borrado con OwnerService mockeado.
+ * Grupo 1 — Pruebas de OwnerController con OwnerService mockeado.
  */
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -35,6 +37,26 @@ public class OwnerControllerMockitoTest {
 
     @MockitoBean
     private OwnerService ownerService;
+
+    // Integrante A — Listado y consulta
+
+    @Test
+    public void testFindAllOwners() throws Exception {
+        List<OwnerDTO> owners = OwnerObjectCreator.getOwnersTO();
+        Mockito.when(ownerService.findAll()).thenReturn(owners);
+
+        mockMvc.perform(get("/owners"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(owners.size()))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(content().json(om.writeValueAsString(owners)));
+
+        Mockito.verify(ownerService).findAll();
+        Mockito.verifyNoMoreInteractions(ownerService);
+    }
+
+    // Integrante C — Actualización y borrado
 
     @Test
     public void testUpdateOwner() throws Exception {
