@@ -26,6 +26,12 @@ public class Vet {
 	@Column(name = "last_name")
 	private String lastName;
 
+	private String email;
+
+	private String phone;
+
+	private Boolean active;
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "vet_specialties",
